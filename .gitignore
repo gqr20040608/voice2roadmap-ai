@@ -31,3 +31,6 @@ raw_data/
 # until their redistribution rights are confirmed.
 data/*.csv
 !data/demo_reviews.csv
+
+# Local VS Code settings
+.vscode/

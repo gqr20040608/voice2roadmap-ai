@@ -2,6 +2,7 @@
 from __future__ import annotations
 import os
 from pathlib import Path
+from urllib.request import urlopen
 
 import pandas as pd
 import plotly.express as px
@@ -15,6 +16,7 @@ from src.ai import generate_ai_brief
 st.set_page_config(page_title="Voice2Roadmap AI", page_icon="🧭", layout="wide", initial_sidebar_state="expanded")
 st.markdown("""
 <style>
+
 .block-container {padding-top: 1.7rem; padding-bottom: 2rem; max-width: 1390px;}
 h1, h2, h3 {letter-spacing: -0.02em;}
 div[data-testid="stMetric"] {padding: 16px; background: #f4f7ff; border: 1px solid #e4ebfa; border-radius: 13px;}
@@ -94,6 +96,29 @@ def apply_roberta_sentiment(reviews: pd.DataFrame) -> pd.DataFrame:
     ]
 
     return result
+
+
+
+@st.cache_data(ttl=20, show_spinner=False)
+def is_ollama_available() -> bool:
+    """Check whether the configured local Ollama model is available."""
+    try:
+        with urlopen(
+            "http://127.0.0.1:11434/api/tags",
+            timeout=1.5
+        ) as response:
+            if response.status != 200:
+                return False
+
+            import json
+            data = json.load(response)
+
+            return any(
+                model.get("name") == "qwen3:4b-instruct"
+                for model in data.get("models", [])
+            )
+    except Exception:
+        return False
 
 
 
@@ -300,11 +325,30 @@ with ai_brief:
         "using the local Qwen3 model."
     )
 
-    st.success(
-        "Local AI Mode: Qwen3 4B via Ollama — No paid API required."
-    )
 
-    if st.button("Generate AI decision brief", type="primary"):
+    ollama_ready = is_ollama_available()
+
+    if ollama_ready:
+        st.success(
+            "Local AI Mode: Qwen3 4B via Ollama is available. "
+            "No paid API required."
+        )
+    else:
+        st.info(
+            "Qwen3 AI Decision Brief is available in the local version "
+            "of Voice2Roadmap AI. This public deployment does not have "
+            "access to a local Ollama server. "
+            "To generate reports, run the project locally with "
+            "Ollama and the qwen3:4b-instruct model installed. "
+            "All other available dashboard features remain usable."
+        )
+
+
+    if st.button(
+        "Generate AI decision brief",
+        type="primary",
+        disabled=not ollama_ready
+    ):
 
         # Remove the previous report before generating a new one.
         st.session_state.pop("ai_brief", None)
@@ -336,7 +380,11 @@ with ai_brief:
                     f"is running. Details: {exc}"
                 )
 
-    report = st.session_state.get("ai_brief")
+    report = (
+        st.session_state.get("ai_brief")
+        if ollama_ready
+        else None
+    )
 
     if report:
         st.warning(
