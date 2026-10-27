@@ -10,7 +10,8 @@ Built with **Python, Streamlit, RoBERTa, Sentence Transformers, and a locally ho
 **Status:** Functional portfolio MVP
 **Interface:** Streamlit
 **AI inference:** Local / experimental
-**Live demo:** Not yet deployed
+**Live demo:** [Launch Voice2Roadmap AI](https://voice2roadmap-ai-gqr.streamlit.app)
+**Deployment note:** The public demo supports dashboard analytics, RoBERTa sentiment analysis, and embedding-based classification and retrieval. Qwen3 decision brief generation requires local Ollama and is disabled in the cloud deployment.
 
 > **Data transparency:** The bundled demonstration reviews are synthetic. User-uploaded datasets may have different provenance and licensing conditions. Model outputs and proposed requirements require human validation.
 
