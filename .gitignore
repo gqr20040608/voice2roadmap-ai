@@ -1,0 +1,33 @@
+
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# macOS
+.DS_Store
+
+# Generated output
+outputs/
+
+# Local backups
+*.bak
+
+# Local raw datasets
+raw_data/
+
+# Keep the synthetic demo dataset public.
+# Exclude uploaded reviews and experimental CSV results
+# until their redistribution rights are confirmed.
+data/*.csv
+!data/demo_reviews.csv
